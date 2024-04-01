@@ -2,10 +2,23 @@ extern crate ncurses;
 
 use ncurses::*;
 use std::collections::VecDeque;
+use rand::{thread_rng, Rng};
 
 const WIDTH: i32 = 20;
 const HEIGHT: i32 = 20;
-const GAME_SPEED: u64 = 100;
+let mut &GAME_SPEED: u64 = 100;
+
+fn place_food(snake: &Snake) -> (i32, i32) {
+    let mut rng = thread_rng();
+    let mut new_food;
+    loop {
+        new_food = (rng.gen_range(1..WIDTH - 1), rng.gen_range(1..HEIGHT - 1));
+        if !snake.body.contains(&new_food) {
+            break;
+        }
+    }
+    new_food
+}
 
 #[derive(Clone, Copy, PartialEq)]
 enum Direction {
@@ -49,6 +62,10 @@ impl Snake {
     fn grow(&mut self) {
         let (x ,y) = *self.body.back().unwrap();
         self.body.push_back((x, y));
+        score += 10;
+        if score % 50 == 0 && GAME_SPEED > 50 {
+            GAME_SPEED -= 10;
+        }
     }
 }
 
@@ -87,10 +104,13 @@ fn main() {
         if snake.body.front() == Some(&food) {
             snake.grow();
             score += 10;
-            // TBD random food locations
+            food = place_food(&snake);
         }
 
-        // TBD collisions
+        let head = snake.body.front().unwrap();
+        if head.0 <= 0 || head.0 >= WIDTH - 1 || head.1 <= 0 || head.1 >= HEIGHT - 1 || snake.body.iter().skip(1).any(|&x| x == *head) {
+            break;
+        }
 
         refresh();
         std::thread::sleep(std::time::Duration::from_millis(GAME_SPEED));
