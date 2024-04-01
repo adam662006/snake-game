@@ -7,7 +7,7 @@ const WIDTH: i32 = 20;
 const HEIGHT: i32 = 20;
 const GAME_SPEED: u64 = 100;
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq)]
 enum Direction {
     Up,
     Down,
