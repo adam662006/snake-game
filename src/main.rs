@@ -16,7 +16,7 @@ enum Direction {
 }
 
 struct Snake {
-    body: VecDeque<i32, i32>,
+    body: VecDeque<(i32, i32)>,
     direction: Direction,
 }
 
